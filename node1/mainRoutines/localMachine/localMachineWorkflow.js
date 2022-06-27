@@ -11,12 +11,6 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     const shell = require("shelljs")
 
     const stateFileName = "asset_state.txt"
-    
-    const assyncKeys = nacl.box.keyPair();
-    
-    // setting own public key in the blockchain:
-    let setPublicKey = `docker exec cli peer chaincode invoke -o orderer3.example.com:9050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setPublicKey","` + nodeID + `","` + assyncKeys.publicKey + `"]}'`
-    shell.exec(setInheritor, { silent: false }) 
 
     // Deleting useless files from last loop of this LM. 
     const oldAssetPieces = './transfer_resources/asset_encrypted_splitted_renamed/';
@@ -99,11 +93,9 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
 
     // _______________________________________________________________________
 
-    // use inheritor pub key for testament encryption
-
-    console.log("--> Successfully used inheritor pub key for testament encryption\n")
-    var inheritorPubKeyCmd = `docker exec cli peer chaincode query -n chaincode -C mychannel -c '{"Args":["getPublicKey","node2"]}'`
-    var testamentEncryptionPassword = shell.exec(inheritorPubKeyCmd)
+    // create a random password for the testament encryption
+    var testamentEncryptionPassword = Math.random().toString(36).slice(2);
+    console.log("--> Successfully created random password for testament encryption\n")
     console.log("testamentEncryptionPassword: " + testamentEncryptionPassword)
     console.log("___________________________________\n")
 
