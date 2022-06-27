@@ -1,0 +1,11 @@
+FROM alpine
+
+WORKDIR /home/app
+
+RUN apk add nodejs
+
+EXPOSE 3000
+
+# RUN node app.js
+
+# CMD [ "node app.js" ]

@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "axios": "^0.24.0",
+    "checksum": "^1.0.0",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "https": "^1.0.0",
+    "request": "^2.88.2",
+    "shamirs-secret-sharing": "^1.0.1",
+    "shelljs": "^0.8.5",
+    "split-file": "^2.3.0"
+  }
+}

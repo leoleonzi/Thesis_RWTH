@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "axios": "^0.24.0",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "request": "^2.88.2",
+    "shamirs-secret-sharing": "^1.0.1",
+    "shelljs": "^0.8.4",
+    "split-file": "^2.3.0"
+  }
+}

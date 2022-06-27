@@ -1,0 +1,42 @@
+FROM leoimages:nodeWithHyperl
+
+# RUN mkdir /home/app
+
+WORKDIR /home/app
+RUN sudo apt-get update
+# RUN apt-get install -y curl 
+RUN apt-get install -y nodejs
+RUN apt-get install -y npm
+RUN apt-get install -y iputils-ping
+RUN apt-get install nano
+# RUN apt-get install docker-compose
+
+RUN npm update
+RUN npm install -g n
+RUN n latest
+
+RUN npm install fs
+RUN npm install split-file
+RUN npm install crypto
+RUN npm install path
+RUN npm install zlib
+RUN npm -g install shelljs
+
+RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
+
+# RUN systemctl start docker.service
+# RUN systemctl status docker
+# RUN docker pull hyperledger/fabric-peer:latest
+
+# https://hub.docker.com/r/hyperledger/fabric-peer/tags
+# !!!!!!!!! problem with latest tag!
+# RUN docker pull hyperledger/fabric-peer:2.2
+# !!!!!!!!
+
+# RUN docker pull hyperledger/fabric-membersrvc:latest
+
+
+
+
+

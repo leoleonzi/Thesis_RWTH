@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+  node1:
+    image: leoimages:image1
+    build:
+      context: ./
+      dockerfile: DockerFileNodes
+    ports:
+      - "3000:3001"
+      - "7051:7051"
+    volumes:
+      - ./node1:/home/app
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.11
+
+  node2:
+    image: leoimages:image1
+    build:
+      context: ./
+      dockerfile: DockerFileNodes
+    ports:
+      - "3000:3002"
+    volumes:
+      - ./node2:/home/app
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.12
+
+
+  node3:
+    image: leoimages:image1
+    build:
+      context: ./
+      dockerfile: DockerFileNodes
+    ports:
+      - "3000:3003"
+    volumes:
+      - ./node3:/home/app
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.13
+
+  node4:
+    image: leoimages:image1
+    build:
+      context: ./
+      dockerfile: DockerFileNodes
+    ports:
+      - "3000:3004"
+    volumes:
+      - ./node4:/home/app
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.14
+
+  node5:
+    image: leoimages:image1
+    build:
+      context: ./
+      dockerfile: DockerFileNodes
+    ports:
+      - "3000:3005"
+    volumes:
+      - ./node5:/home/app
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.15
+            
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1

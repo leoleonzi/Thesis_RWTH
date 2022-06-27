@@ -1,0 +1,11 @@
+version: "3"
+services:
+  asset:
+    image: "asset1"
+    build:
+      context: ./
+      dockerfile: DockerfileAsset
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./assetFiles:/home/app

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "split-file": "^2.3.0"
+  }
+}
