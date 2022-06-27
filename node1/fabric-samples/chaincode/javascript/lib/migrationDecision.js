@@ -79,5 +79,5 @@ exports.migrationDecision = function (assets, nodes, migratioanalysis) {
     console.log(candidates[chosenNode])
     console.log("\nSelected Node's ID:")
     console.log(candidates[chosenNode].nodeIP)
-    return candidates[chosenNode].nodeIP
+    return [candidates[chosenNode].nodeIP, candidates[chosenNode].ID]
 }
