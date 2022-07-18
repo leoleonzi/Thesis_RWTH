@@ -2,7 +2,7 @@ version: '3'
 
 services:
   node1:
-    image: leoimages:image1
+    image: leoimages:image2
     build:
       context: ./
       dockerfile: DockerFileNodes
@@ -16,7 +16,7 @@ services:
         ipv4_address: 10.5.0.11
 
   node2:
-    image: leoimages:image1
+    image: leoimages:image2
     build:
       context: ./
       dockerfile: DockerFileNodes
@@ -30,7 +30,7 @@ services:
 
 
   node3:
-    image: leoimages:image1
+    image: leoimages:image2
     build:
       context: ./
       dockerfile: DockerFileNodes
@@ -43,7 +43,7 @@ services:
         ipv4_address: 10.5.0.13
 
   node4:
-    image: leoimages:image1
+    image: leoimages:image2
     build:
       context: ./
       dockerfile: DockerFileNodes
@@ -56,7 +56,7 @@ services:
         ipv4_address: 10.5.0.14
 
   node5:
-    image: leoimages:image1
+    image: leoimages:image2
     build:
       context: ./
       dockerfile: DockerFileNodes

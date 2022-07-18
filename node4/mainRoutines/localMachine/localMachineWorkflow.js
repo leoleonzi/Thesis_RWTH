@@ -1,13 +1,22 @@
-function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, testamentorsNumber, assetID) {
+function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, testamentorsNumber, assetID, nodeID) {
 
+    console.log("bench: " + Date.now())
     const mainEncryption = require("../../Encrypt_AES256/mainEncryption")
     const splitFiles = require("../../assetDivision/split-files")
     const http_server = require("../../http_server")
     const fs = require("fs")
     const renameAssetPiecesRandom = require("./renameAssetPiecesRandom")
-    const shamirSecretCreated = require("../../shamirSecret/shamirSecretCreated")
+    const testamentorsKeysCreation = require("../../testamentorsKeysCreation/testamentorsKeysCreation")
     const path = require('path');
     const shell = require("shelljs")
+
+    const stateFileName = "asset_state.txt"
+    
+    const assyncKeysTestator = nacl.box.keyPair();
+    
+    // setting own public key in the blockchain:
+    let setPublicKeyTestator = `docker exec cli peer chaincode invoke -o orderer3.example.com:9050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setPublicKey","` + nodeID + `","` + assyncKeysTestator.publicKey + `"]}'`
+    shell.exec(setPublicKeyTestator, { silent: false }) 
 
     // Deleting useless files from last loop of this LM. 
     const oldAssetPieces = './transfer_resources/asset_encrypted_splitted_renamed/';
@@ -50,11 +59,12 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     // BLOCK CHAIN!!!
     var migrationDecisionCMD = `docker exec cli peer chaincode query -n chaincode -C mychannel -c '{"Args":["migrationDecision"]}'`
     var inheritorAddress = shell.exec(migrationDecisionCMD, { silent: true })
-    inheritorAddress = inheritorAddress.substring(0, inheritorAddress.length - 1)
+    var inheritorID =  inheritorAddress[1]
+    inheritorAddress = inheritorAddress[0].substring(0, inheritorAddress.length - 1)
     // inheritorAddress = ["10.5.0.12"]
     console.log("Migration Decision executed. Chosen Inheritor IP: " + inheritorAddress + "\n")
 
-    let setInheritor = `docker exec cli peer chaincode invoke -o orderer3.example.com:9050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setInheritor","` + assetID + `","` +  inheritorAddress + `"]}'`
+    let setInheritor = `docker exec cli peer chaincode invoke -o orderer3.example.com:9050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setInheritor","` + assetID + `","` + inheritorAddress + `"]}'`
     shell.exec(setInheritor, { silent: false })
 
     // choose the testamentors:
@@ -67,7 +77,7 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     var operationalNodes = queryNodesResult.filter(e => e.runningStatus === 'operational')
     var testamentorsAddress = []
     for (let operationalNode of operationalNodes) {
-        if (operationalNode.nodeIP != inheritorAddress){
+        if (operationalNode.nodeIP != inheritorAddress) {
             testamentorsAddress.push(operationalNode.nodeIP)
         }
     }
@@ -75,24 +85,27 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     setTimeout(() => {
         // testamentorsAddress = ["10.5.0.13", "10.5.0.14", "10.5.0.15"]
         console.log("Testamentors chosen:" + testamentorsAddress + "\n")
-    
+
         // Setting testamentors in the blockchain:
-        
-        let setTestamentors = `docker exec cli peer chaincode invoke -o orderer4.example.com:10050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer4.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setTestamentors","` + assetID + `","[` +  testamentorsAddress + `]"]}'`
+
+        let setTestamentors = `docker exec cli peer chaincode invoke -o orderer4.example.com:10050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer4.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setTestamentors","` + assetID + `","[` + testamentorsAddress + `]"]}'`
         shell.exec(setTestamentors, { silent: true })
         console.log("Setting testamentors in the blockchain\n")
-    
+
         // let queryTest = `docker exec cli peer chaincode query -n chaincode -C mychannel -c '{"Args":["ReadAsset","` + assetID + `"]}'`
         // shell.exec(queryTest)
-    
+
         console.log("___________________________________\n")
     }, 5000);
 
     // _______________________________________________________________________
 
-    // create a random password for the testament encryption
-    var testamentEncryptionPassword = Math.random().toString(36).slice(2);
-    console.log("--> Successfully created random password for testament encryption\n")
+
+    
+    // Get Inheritor's public key:
+    console.log("--> Successfully used inheritor pub key for testament encryption\n")
+    var inheritorPubKeyCmd = `docker exec cli peer chaincode query -n chaincode -C mychannel -c '{"Args":["getPublicKey", "` + inheritorID + `"]}'`
+    var testamentEncryptionPassword = shell.exec(inheritorPubKeyCmd)
     console.log("testamentEncryptionPassword: " + testamentEncryptionPassword)
     console.log("___________________________________\n")
 
@@ -106,30 +119,35 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     console.log("--> Successfully created testament\n")
     console.log("___________________________________\n")
 
-    // encrypt the testament
+    // encrypt the testament and the JSON file with the state of the asset app
     setTimeout(function () {
         mainEncryption.mainEncryption("testament_ready/", testamentFileName, testamentEncryptionPassword, "testament_encrypted/")
+        mainEncryption.mainEncryption("asset_state_ready/", stateFileName, testamentEncryptionPassword, "asset_state_encrypted/")
+
     }, 6500)
     console.log("--> Successfully encrypted the testament\n")
+    console.log("--> Successfully encrypted the state of asset file\n")
+
     console.log("___________________________________\n")
 
-    // create Shamir's secret keys from the testament encryption key:
+    // create Testamentors pieces keys:
     setTimeout(function () {
-        shamirSecretCreated.shamirSecretCreated(testamentEncryptionPassword, testamentorsAddress)
+        testamentorsKeysCreation.testamentorsKeysCreation(testamentorsAddress)
     }, 6600)
-    console.log("--> Successfully created shamir secret keys from testament encryption password\n")
+    console.log("--> Successfully created Testamentors pieces keys\n")
     console.log("___________________________________\n")
 
-    // send the encrypted testament to the inheritor:
+    // send the encrypted testament and the state file to the inheritor:
     setTimeout(function () {
         http_server.http_server(localMachineIP, "testament_encrypted/", testamentFileName + ".enc", "300" + inheritorAddress.slice(-1), inheritorAddress)
+        http_server.http_server(localMachineIP, "asset_state_encrypted/", stateFileName + ".enc", "3900", inheritorAddress)
     }, 6700)
 
-    // send shamir's secret keys to testamentors
+    // send Testamentors pieces keys to testamentors
     setTimeout(function () {
         var testamentorCount = 0
         for (const testamentorAddress of testamentorsAddress) {
-            http_server.http_server(localMachineIP, "shamirKeys_created/", "shamirKey" + testamentorAddress.slice(-1) + ".txt", "301" + testamentorAddress.slice(-1), testamentorAddress)
+            http_server.http_server(localMachineIP, "testamentorsKeys_created/", "testamentorsKey" + testamentorAddress.slice(-1) + ".txt", "301" + testamentorAddress.slice(-1), testamentorAddress)
             testamentorCount++
         }
     }, 6800)
@@ -138,11 +156,24 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     setTimeout(function () {
         var piecesNames = fs.readdirSync(__dirname + "/../../transfer_resources/asset_encrypted_splitted_renamed");
         var testamentorCount = 0
-        for (const testamentorAddress of testamentorsAddress) {
-            http_server.http_server(localMachineIP, "/../transfer_resources/asset_encrypted_splitted_renamed/", piecesNames[testamentorCount], "310" + testamentorAddress.slice(-1), testamentorAddress)
-            testamentorCount++
+        var i = 0
+        while (i < 2) {
+            for (const testamentorAddress of testamentorsAddress) {
+                var index = testamentorCount + i
+                if (index > testamentorsNumber - 1) {
+                    index = index - testamentorsNumber
+                    if (index > testamentorsNumber - 1){
+                        index = index - testamentorsNumber
+                    }
+                }
+                http_server.http_server(localMachineIP, "/../transfer_resources/asset_encrypted_splitted_renamed/", piecesNames[index], "3" + (i + 3) + "0" + testamentorAddress.slice(-1), testamentorAddress)
+                testamentorCount++
+            }
+            i++
         }
         setTimeout(function () {
+            // console.log("bench: " + Date.now())
+
             fs.unlinkSync("./transfer_resources/asset_encrypted/" + assetFileName + ".enc")
             console.log("==> Deleted file " + assetFileName + ".enc\n")
 
@@ -150,6 +181,15 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
             // console.log("==> Deleted file " + assetFileName)
         }, 6500)
     }, 6900)
+
+    var used
+    var heartbeat = setInterval(() => {
+        used = process.memoryUsage().heapUsed / 1024 / 1024;
+        console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
+        heartbeatCMD = `docker exec cli peer chaincode invoke -o orderer3.example.com:9050 --tls true --cafile /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/example.com/orderers/orderer3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem -C mychannel -n chaincode --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt -c '{"Args":["setHeartBeat","` + nodeID + `"]}'`
+        shell.exec(heartbeatCMD, { silent: true })
+        console.log("\nSet heartbeat: " + Math.floor(Date.now() / 10000))
+    }, 7000);
 }
 
 module.exports = { localMachineWorkflow }

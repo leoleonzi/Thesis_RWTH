@@ -9,6 +9,8 @@ function localMachineWorkflow(localMachineIP, testamentFileName, assetFileName, 
     const testamentorsKeysCreation = require("../../testamentorsKeysCreation/testamentorsKeysCreation")
     const path = require('path');
     const shell = require("shelljs")
+    const nacl = require('tweetnacl');
+    nacl.util = require('tweetnacl-util');
 
     const stateFileName = "asset_state.txt"
     
