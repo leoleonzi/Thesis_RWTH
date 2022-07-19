@@ -64,6 +64,10 @@ E.6. docker:
     docker run --runtime=sysbox-runc -P -d(detach: run in the background)
     
     
+E.7. Bug self signed certificate:
+export NODE_TLS_REJECT_UNAUTHORIZED='0', all machines
+    
+    
     
     
     

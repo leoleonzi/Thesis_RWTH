@@ -7,214 +7,279 @@
 'use strict';
 
 // Deterministic JSON.stringify()
-const stringify  = require('json-stringify-deterministic');
-const sortKeysRecursive  = require('sort-keys-recursive');
+const stringify = require('json-stringify-deterministic');
+const sortKeysRecursive = require('sort-keys-recursive');
 const { Contract } = require('fabric-contract-api');
 
 // Creating variable migratioanalysis
 var migratioanalysis = { "currentNode": "node4", "dateTime": 5 }
 
 class AssetTransfer extends Contract {
-
     async InitLedger(ctx) {
         const assets = [
             {
                 ID: "asset2",
                 name: 'app2',
+                currentNode: 'node4',
+                testamentors: [],
+                inheritor: "",
                 type: 5,
-                assetRequires: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 10,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
+                assetRequires: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 10,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
                 state: 'running',
-                currentNode: "node4",
                 lastMigratedTime: 3,
             },
             {
                 ID: "asset4",
                 name: 'app4',
+                currentNode: 'node3',
+                testamentors: [],
+                inheritor: "",
                 type: 2,
-                assetRequires: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 10,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
+                assetRequires: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 10,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
                 state: 'failed',
-                currentNode: "node3",
                 lastMigratedTime: 4,
             },
             {
                 ID: "asset7",
                 name: 'app7',
+                currentNode: 'node1',
+                testamentors: [],
+                inheritor: "",
                 type: 33,
-                assetRequires: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 10,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
+                assetRequires: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 10,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
                 state: 'failed',
-                currentNode: "node1",
                 lastMigratedTime: 1,
             },
             {
                 ID: "asset8",
                 name: 'app8',
+                currentNode: 'node4',
+                testamentors: [],
+                inheritor: "",
                 type: 53,
-                assetRequires: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 10,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
+                assetRequires: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 10,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
                 state: 'running',
-                currentNode: "node4",
                 lastMigratedTime: 10,
             },
             {
                 ID: "asset1",
                 name: 'app1',
+                currentNode: 'node1',
+                testamentors: [],
+                inheritor: "",
                 type: 15,
-                assetRequires: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 10,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
+                assetRequires: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 10,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
                 state: 'running',
-                currentNode: "node6",
                 lastMigratedTime: 12,
             },
             {
                 ID: "asset3",
                 name: 'app3',
+                currentNode: 'node3',
+                testamentors: [],
+                inheritor: "",
                 type: 59,
-                assetRequires: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 10,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
+                assetRequires: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 10,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
                 state: 'running',
-                currentNode: "node3",
                 lastMigratedTime: 7,
             },
         ];
-        
+
         const nodes = [
             {
                 ID: "node1",
-                nodeIP: '10.5.0.5',
+                publickey: "",
+                publickeyConfigured:0,
+                nodeIP: '10.5.0.11',
                 assetList: ["asset1"],
                 runningStatus: 'failed',
-                resourceStatus: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 8,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 7,
-                nwBW: 1},
-                rttMapping:{tcpServerIP: "test",
-                rtt:3,
-                recordTime:4},
-                addressDetails:{country:"bra",locality:"sp"}                
+                resourceStatus: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 8,
+                    nwBWUtilization: 62,
+                    RTT_ms: 4,
+                    Cores: 7,
+                    nwBW: 1,
+                },
+                rttMapping: {
+                    tcpServerIP: "test",
+                    rtt: 3,
+                    recordTime: 4
+                },
+                nodeInfoTime: {creationDateTime: 0, lastHeartBeatDateTime: 0},
+                addressDetails: { country: "bra", locality: "sp" }
             },
             {
                 ID: "node2",
-                nodeIP: '10.5.0.6',
+                publickey: "",
+                publickeyConfigured:0,
+                nodeIP: '10.5.0.12',
                 assetList: ["asset2"],
                 runningStatus: 'operational',
-                resourceStatus: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 7,
-                nwBWUtilization: 62,
-                RTT_ms: 4,
-                Cores: 2,
-                nwBW: 1},
-                rttMapping:{tcpServerIP: "test",
-                rtt:3,
-                recordTime:4},
-                addressDetails:{country:"bra",locality:"sp"}
+                resourceStatus: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 7,
+                    nwBWUtilization: 50,
+                    RTT_ms: 1,
+                    Cores: 3,
+                    nwBW: 2,
+                },
+                rttMapping: {
+                    tcpServerIP: "test",
+                    rtt: 3,
+                    recordTime: 4
+                },
+                nodeInfoTime: {creationDateTime: 0, lastHeartBeatDateTime: 0},
+                addressDetails: { country: "bra", locality: "sp" }
             },
             {
                 ID: "node3",
-                nodeIP: '10.5.0.7',
+                publickey: "",
+                publickeyConfigured:0,
+                nodeIP: '10.5.0.13',
                 assetList: ["asset3"],
                 runningStatus: 'operational',
-                resourceStatus: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 6,
-                nwBWUtilization: 55,
-                RTT_ms: 3,
-                Cores: 3,
-                nwBW: 2},
-                rttMapping:{tcpServerIP: "test",
-                rtt:3,
-                recordTime:4},
-                addressDetails:{country:"bra",locality:"sp"}
+                resourceStatus: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 4,
+                    nwBWUtilization: 55,
+                    RTT_ms: 3,
+                    Cores: 2,
+                    nwBW: 2,
+                },
+                rttMapping: {
+                    tcpServerIP: "test",
+                    rtt: 3,
+                    recordTime: 4
+                },
+                nodeInfoTime: {creationDateTime: 0, lastHeartBeatDateTime: 0},
+                addressDetails: { country: "bra", locality: "sp" }
             },
             {
                 ID: "node4",
-                nodeIP: '10.5.0.8',
+                publickey: "",
+                publickeyConfigured:0,
+                nodeIP: '10.5.0.14',
                 assetList: ["asset4"],
                 runningStatus: 'operational',
-                resourceStatus: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 7,
-                nwBWUtilization: 58,
-                RTT_ms: 4,
-                Cores: 4,
-                nwBW: 1},
-                rttMapping:{tcpServerIP: "test",
-                rtt:3,
-                recordTime:4},
-                addressDetails:{country:"bra",locality:"sp"}
+                resourceStatus: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 7,
+                    nwBWUtilization: 58,
+                    RTT_ms: 4,
+                    Cores: 4,
+                    nwBW: 1,
+                },
+                rttMapping: {
+                    tcpServerIP: "test",
+                    rtt: 3,
+                    recordTime: 4
+                },
+                nodeInfoTime: {creationDateTime: 0, lastHeartBeatDateTime: 0},
+                addressDetails: { country: "bra", locality: "sp" }
             },
             {
                 ID: "node5",
-                nodeIP: '10.5.0.9',
+                publickey: "",
+                publickeyConfigured:0,
+                nodeIP: '10.5.0.15',
                 assetList: ["asset5"],
-                runningStatus: 'failed',
-                resourceStatus: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 8,
-                nwBWUtilization: 53,
-                RTT_ms: 5,
-                Cores: 5,
-                nwBW: 1},
-                rttMapping:{tcpServerIP: "test",
-                rtt:3,
-                recordTime:4},
-                addressDetails:{country:"bra",locality:"sp"}
+                runningStatus: 'operational',
+                resourceStatus: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 8,
+                    nwBWUtilization: 53,
+                    RTT_ms: 5,
+                    Cores: 5,
+                    nwBW: 1,
+                },
+                rttMapping: {
+                    tcpServerIP: "test",
+                    rtt: 3,
+                    recordTime: 4
+                },
+                nodeInfoTime: {creationDateTime: 0, lastHeartBeatDateTime: 0},
+                addressDetails: { country: "bra", locality: "sp" }
             },
             {
                 ID: "node6",
-                nodeIP: '10.5.0.10',
+                publickey: "",
+                publickeyConfigured:0,
+                nodeIP: '10.5.0.16',
                 assetList: [""],
                 runningStatus: 'failed',
-                resourceStatus: {CPU_Availability_percentage: 58,
-                Clock_Rate_GHz: 3,
-                RAM_Available_GB: 6,
-                nwBWUtilization: 57,
-                RTT_ms: 4,
-                Cores: 6,
-                nwBW: 1},
-                rttMapping:{tcpServerIP: "test",
-                rtt:3,
-                recordTime:4},
-                addressDetails:{country:"bra",locality:"sp"}
+                resourceStatus: {
+                    CPU_Availability_percentage: 58,
+                    Clock_Rate_GHz: 3,
+                    RAM_Available_GB: 6,
+                    nwBWUtilization: 57,
+                    RTT_ms: 4,
+                    Cores: 6,
+                    nwBW: 1,
+                },
+                rttMapping: {
+                    tcpServerIP: "test",
+                    rtt: 3,
+                    recordTime: 4
+                },
+                nodeInfoTime: {creationDateTime: 0, lastHeartBeatDateTime: 0},
+                addressDetails: { country: "bra", locality: "sp" }
             },
         ];
-        
+
 
         for (const asset of assets) {
             asset.docType = 'asset';
@@ -224,7 +289,7 @@ class AssetTransfer extends Contract {
             // when retrieving data, in any lang, the order of data will be the same and consequently also the corresonding hash
             await ctx.stub.putState(asset.ID, Buffer.from(stringify(sortKeysRecursive(asset))));
         }
-        
+
         for (const node of nodes) {
             node.docType = 'node';
             // example of how to write to world state deterministically
@@ -331,7 +396,7 @@ class AssetTransfer extends Contract {
                 console.log(err);
                 record = strValue;
             }
-            if (record.docType=="asset"){
+            if (record.docType == "asset") {
                 allResults.push(record);
             }
             result = await iterator.next();
@@ -374,7 +439,7 @@ class AssetTransfer extends Contract {
                 console.log(err);
                 record = strValue;
             }
-            if (record.docType=="node"){
+            if (record.docType == "node") {
                 allResults.push(record);
             }
             result = await iterator.next();
@@ -383,12 +448,12 @@ class AssetTransfer extends Contract {
     }
 
     async QueryAssetsByOwner(ctx, owner) {
-		let queryString = {};
-		queryString.selector = {};
-		queryString.selector.docType = 'asset';
-		queryString.selector.owner = owner;
-		return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
-	}
+        let queryString = {};
+        queryString.selector = {};
+        queryString.selector.docType = 'asset';
+        queryString.selector.owner = owner;
+        return await this.GetQueryResultForQueryString(ctx, JSON.stringify(queryString)); //shim.success(queryResults);
+    }
 
     // calling function of migrationDecision:
     async migrationDecision(ctx) {
@@ -396,14 +461,75 @@ class AssetTransfer extends Contract {
         var assets = await this.GetAllAssets(ctx)
         var nodes = await this.GetAllNodes(ctx)
         var chosenNode = migDec.migrationDecision(assets, nodes, migratioanalysis)
-        return (chosenNode)        
-        
+        return (chosenNode)
+
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         // return ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
     }
 
-}
+    // dataType: "assets" to return list of assets. "nodes" to return list of nodes
+    async exportData(ctx, dataType) {
+        var exportData = require('./exportData');
+        var assets = await this.GetAllAssets(ctx)
+        var nodes = await this.GetAllNodes(ctx)
+        var returnData = exportData.exportData(assets, nodes, dataType)
+        return (returnData)
+    }
 
+    // TransferAsset updates the owner field of asset with given id in the world state.
+    async setTestamentors(ctx, assetId, testamentorsList) {
+        const assetString = await this.ReadAsset(ctx, assetId);
+        const asset = JSON.parse(assetString);
+        asset.testamentors = testamentorsList;
+        // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+        return ctx.stub.putState(assetId, Buffer.from(stringify(sortKeysRecursive(asset))));
+    }
+
+    async setInheritor(ctx, assetId, inheritor) {
+        const assetString = await this.ReadAsset(ctx, assetId);
+        const asset = JSON.parse(assetString);
+        asset.inheritor = inheritor;
+        // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+        return ctx.stub.putState(assetId, Buffer.from(stringify(sortKeysRecursive(asset))));
+    }
+
+    async getTestamentors2(ctx, assetId) {
+        const assetJSON = await this.ReadAsset(ctx, assetId);
+        const asset = JSON.parse(assetJSON);
+        return asset.testamentors;
+    }
+
+    async setHeartBeat(ctx, nodeId) {
+        const nodeString = await this.ReadNode(ctx, nodeId);
+        const node = JSON.parse(nodeString);
+        node.nodeInfoTime.lastHeartBeatDateTime = Math.floor(Date.now() / 10000);
+        // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+        return ctx.stub.putState(nodeId, Buffer.from(stringify(sortKeysRecursive(node))));
+    }
+
+    async getHeartBeat(ctx, nodeId) {
+        const nodeJSON = await this.ReadAsset(ctx, nodeId);
+        const node = JSON.parse(nodeJSON);
+        return node.nodeInfoTime.lastHeartBeatDateTime;
+    }
+    
+    async getPublicKey(ctx, nodeId) {
+        const nodeJSON = await this.ReadAsset(ctx, nodeId);
+        const node = JSON.parse(nodeJSON);
+        return node.publickey;
+    }
+    
+    async setPublicKey(ctx, nodeId, publickey) {
+        const nodeString = await this.ReadNode(ctx, nodeId);
+        const node = JSON.parse(nodeString);
+        if (node.publickeyConfigured == 0){
+		node.publickeyConfigured = 1;
+		node.publickey = publickey;	
+		// we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
+        	return ctx.stub.putState(nodeId, Buffer.from(stringify(sortKeysRecursive(node))));		
+        }        
+    }
+}
 module.exports = AssetTransfer;
 
 
